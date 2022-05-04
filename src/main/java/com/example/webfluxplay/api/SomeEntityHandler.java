@@ -36,16 +36,27 @@ public class SomeEntityHandler {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                 .body(request.bodyToMono(SomeEntity.class)
                         .doOnNext(this::validate)
-                        .flatMap(someEntity->{
-                        	someEntity.setIsNew(true);
-                        	return someEntityRepository.save(someEntity);
+                        .flatMap(someEntity -> {
+                            someEntity.setIsNew(true);
+                            return someEntityRepository.save(someEntity);
                         }), SomeEntity.class);
     }
 
+    public Mono<ServerResponse> updateSomeEntity(ServerRequest request) {
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(request.bodyToMono(SomeEntity.class)
+                        .doOnNext(this::validate)
+                        .flatMap(someEntityRepository::save), SomeEntity.class);
+    }
+
     public Mono<ServerResponse> getSomeEntity(ServerRequest request) {
-       return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(someEntityRepository.findById(request.pathVariable("id"))
-        		, SomeEntity.class);
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(someEntityRepository.findById(request.pathVariable("id")), SomeEntity.class);
+    }
+
+    public Mono<ServerResponse> deleteSomeEntity(ServerRequest request) {
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(someEntityRepository.deleteById(request.pathVariable("id")), SomeEntity.class);
     }
 
     private void validate(SomeEntity someEntity) {
@@ -55,4 +66,5 @@ public class SomeEntityHandler {
             throw new ServerWebInputException(errors.toString());
         }
     }
+
 }

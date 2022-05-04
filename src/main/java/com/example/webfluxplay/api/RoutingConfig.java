@@ -25,10 +25,14 @@ public class RoutingConfig implements WebFluxConfigurer {
                 .path("/api/someentity", b1 -> b1
                         .nest(accept(APPLICATION_JSON), b2 -> b2
                                 .GET("/{id}", handler::getSomeEntity)
-                                .GET(handler::listSomeEntities))
-                        .POST(contentType(APPLICATION_JSON), handler::createSomeEntity))
-                .build();
+                                .GET(handler::listSomeEntities)
+                                .POST(contentType(APPLICATION_JSON), handler::createSomeEntity)
+                                .PATCH(contentType(APPLICATION_JSON), handler::updateSomeEntity)
+                        )
+                        .DELETE("/{id}", handler::deleteSomeEntity)
+                ).build();
     }
+
     @Bean
     public DefaultErrorAttributes errorAttributes() {
         return new MessageErrorAttributes();
